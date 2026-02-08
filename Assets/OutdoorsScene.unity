@@ -165,6 +165,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _playerTest: {fileID: 1532505767}
   followSpeed: 2
+  _playerPink: {fileID: 1532505769}
+  _playerGreen: {fileID: 1664885640}
 --- !u!1 &157207112
 GameObject:
   m_ObjectHideFlags: 0

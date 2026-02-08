@@ -7,6 +7,9 @@ public class WebToGrid : MonoBehaviour
     [SerializeField] private GameObject _playerTest;
     [SerializeField] private float followSpeed = 5f; // units per second
     private Vector3 targetPosition;
+    [SerializeField] private PlayerController _playerPink;
+    [SerializeField] private PlayerController _playerGreen;
+
 
     private const int GRID_SIZE = 20;      // logical grid
     private const float CELL_WORLD_SIZE = 2f; // each cell is 2x2 Unity units
@@ -25,23 +28,33 @@ public class WebToGrid : MonoBehaviour
         // Only process the biggest blob (first one)
         //     var blob = data.client.blobs[0];
         
-             Vector2Int cellKey = PixelToGrid(
+             Vector2Int cellKeyPink = PixelToGrid(
                  new Vector2(data.payload.pink.centroid.x, data.payload.pink.centroid.y),
                  srcWidth,
                  srcHeight
              );
 
-            FloorTile _tile =  GridManager.Instance.GetTileAt(cellKey.x, cellKey.y);
+        Vector2Int cellKeyGreen = PixelToGrid(
+    new Vector2(data.payload.green.centroid.x, data.payload.green.centroid.y),
+    srcWidth,
+    srcHeight
+);
 
-            // Debug.Log($"Blob centroid at pixel ({blob.centroid.x},{blob.centroid.y}) -> Grid cell ({cell.x},{cell.y})");
+        FloorTile _tilePink =  GridManager.Instance.GetTileAt(cellKeyPink.x, cellKeyPink.y);
+        FloorTile _tileGreen = GridManager.Instance.GetTileAt(cellKeyGreen.x, cellKeyGreen.y);
+        // Debug.Log($"Blob centroid at pixel ({blob.centroid.x},{blob.centroid.y}) -> Grid cell ({cell.x},{cell.y})");
 
-            // Vector3 worldPos = GridToWorld(cell);
-            // targetPosition = worldPos; // update target, but don't set transform.position directly
+        // Vector3 worldPos = GridToWorld(cell);
+        // targetPosition = worldPos; // update target, but don't set transform.position directly
+        _playerGreen.MoveToCell(_tileGreen);
+        _playerPink.MoveToCell(_tilePink);
 
-             PlayerController.Instance.MoveToCell(_tile);
-             // Spawn a cell in GridManager, scaled by CELL_WORLD_SIZE
-             //GridManager.Instance.CreateSingleCell(cell.x, cell.y, CELL_WORLD_SIZE);
-        
+
+
+        //PlayerController.Instance.MoveToCell(_tile);
+        // Spawn a cell in GridManager, scaled by CELL_WORLD_SIZE
+        //GridManager.Instance.CreateSingleCell(cell.x, cell.y, CELL_WORLD_SIZE);
+
     }
 
     /// <summary>
