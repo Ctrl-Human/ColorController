@@ -2,6 +2,7 @@ using NativeWebSocket;
 using System;
 using System.Text;
 using UnityEngine;
+using Newtonsoft.Json.Linq;
 
 public class WebsocketController : MonoBehaviour
 {
@@ -44,15 +45,29 @@ public class WebsocketController : MonoBehaviour
 
             try
             {
-                WebData update = JsonUtility.FromJson<WebData>(json);
+
+                var root = JObject.Parse(json);
+                string type = root["type"].Value<string>();
+
+                if (type == "colorData")
+                {
+                    var payload = root["payload"].ToObject<PayloadColorData>();
+                    _webToGrid.UpdateWebDataToGrid(payload);
+                }
+                else if (type == "clientData")
+                {
+                    var payload = root["payload"].ToObject<PayloadFaceData>();
+                }
+
+                //WebData update = JsonUtility.FromJson<WebData>(json);
 
                     
                 
              //   if (update.type == "update" && update.client?.blobs != null)
               //  {
                         //test = true;
-                        _webToGrid.UpdateWebDataToGrid(update);
-                        Debug.Log("blaaaa"+update);
+                      //  _webToGrid.UpdateWebDataToGrid(update);
+                       // Debug.Log("blaaaa"+update);
 
                 //}
                 Debug.Log("one message");

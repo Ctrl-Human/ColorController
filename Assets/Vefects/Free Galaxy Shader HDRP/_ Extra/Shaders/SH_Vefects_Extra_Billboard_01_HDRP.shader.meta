@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 14159824e119cf145b94836ad7ba6db8
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures: []
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 323303
+  packageName: Free Galaxy Shader - HDRP
+  packageVersion: 1.0.0
+  assetPath: Assets/Vefects/Free Galaxy Shader HDRP/_ Extra/Shaders/SH_Vefects_Extra_Billboard_01_HDRP.shader
+  uploadId: 764079

@@ -1,14 +1,20 @@
 using DG.Tweening;
 using System;
 using TMPro;
+using UnityEditor.Build.Content;
 using UnityEngine;
 
 public class FloorTile : SingleGridObject
 {
+
+
     [SerializeField] private GameObject _floorMesh;
-    [SerializeField] private IInteractable _interactable;
     [SerializeField] public Vector2Int Key { get; private set; }
     [SerializeField] private TextMeshProUGUI _visualKey;
+
+    [Header("Tile Logic")]
+    [SerializeField] private int _heightLevel=0;
+    [SerializeField] private TileType _tileType = TileType.Flat;
 
     public override void Destroy()
     {
@@ -17,9 +23,10 @@ public class FloorTile : SingleGridObject
 
     public override void Initialize(Vector2Int key, Action onComplete)
     {
-        Key = key;
-        _visualKey.text = Key.ToString();
-        StartAnimation(onComplete);
+        base.Initialize(key, _heightLevel, _tileType , onComplete);
+
+        _visualKey.text = $"{key}\nH:{HeightLevel}";
+        StartAnimation(null);
     }
 
     private void StartAnimation(Action onComplete)
@@ -37,16 +44,17 @@ public class FloorTile : SingleGridObject
             });
     }
 
-    public void SetInteractable(IInteractable interactable)
+
+
+
+    public override Vector3 GetCenterPoint()
     {
-        _interactable = interactable;
-        _interactable.Initialize();
+        Vector3 _pos = new Vector3(
+            transform.position.x + GridManager.Instance.CellSize * 0.25f,
+            transform.position.y,
+            transform.position.z + GridManager.Instance.CellSize * 0.25f);
+        return _pos;
     }
 
-    public override void AddObject(IInteractable interObject)
-    {
-        throw new NotImplementedException();
-    }
 
-    public bool HasInteractable => _interactable != null;
 }

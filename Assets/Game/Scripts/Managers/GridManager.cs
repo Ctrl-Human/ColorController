@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
@@ -11,17 +12,20 @@ public class GridManager : MonoBehaviour
     //  [SerializeField] private
 
     [Header("Grid Settings")]
-    [SerializeField] private FloorTile _floorTile;
+    [SerializeField] private SingleGridObject _tile;
     [SerializeField] private int _gridSize = 20;
     [SerializeField] private int _cellSize = 2;
 
-
+    [SerializeField] private AStarGridModule _astarGridModule;
 
     public int CellSize => _cellSize;
     public int GridSize => _gridSize;
 
+
+
     private Vector2Int[][] _spawnDirections;
-    private Dictionary<Vector2Int, FloorTile> _grid;
+    private Dictionary<Vector2Int, SingleGridObject> _grid;
+    public IEnumerable<SingleGridObject> AllTiles => _grid.Values;
 
     private void Awake()
     {
@@ -31,7 +35,7 @@ public class GridManager : MonoBehaviour
             return;
         }
         Instance = this;
-        _grid = new Dictionary<Vector2Int, FloorTile>();
+        _grid = new Dictionary<Vector2Int, SingleGridObject>();
 
         _spawnDirections = new Vector2Int[3][];
         _spawnDirections[0] = new Vector2Int[1] { new Vector2Int(0, 0) };
@@ -57,6 +61,23 @@ public class GridManager : MonoBehaviour
         // StartCoroutine(SpawnFullGridCoroutine());
     }
 
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.A))
+        {
+            Debug.Log("jo");
+            _grid.TryGetValue(new Vector2Int(2, 2), out SingleGridObject startCell);
+            _grid.TryGetValue(new Vector2Int(8, 13), out SingleGridObject endCell);
+          List<SingleGridObject> _path =  _astarGridModule.FindPath(startCell,endCell);
+            Debug.Log(_path);
+
+            foreach (SingleGridObject path in _path)
+            {
+                path.gameObject.SetActive(false);
+            }
+        }
+    }
     #region Grid Helpers
 
     // Converts grid coordinates to world position (center of cell)
@@ -72,6 +93,26 @@ public class GridManager : MonoBehaviour
         );
     }
 
+
+   public IEnumerable<SingleGridObject> GetNeighbors(SingleGridObject tile)
+    {
+        Vector2Int[] dirs =
+        {
+        Vector2Int.up,
+        Vector2Int.down,
+        Vector2Int.left,
+        Vector2Int.right
+    };
+
+        foreach (var d in dirs)
+        {
+            Vector2Int p = tile.GridPos + d;
+            if (_grid.TryGetValue(p, out var neighbor))
+                
+                yield return neighbor;
+        }
+    }
+
     #endregion
 
     #region Spawn Grid
@@ -85,7 +126,7 @@ public class GridManager : MonoBehaviour
             {
                 Vector2Int pos = new Vector2Int(x, z);
                 SpawnCell(pos);
-                yield return new WaitForSeconds(0.05f); // small delay if you want a "wave spawn"
+                yield return new WaitForEndOfFrame(); // small delay if you want a "wave spawn"
             }
         }
     }
@@ -103,9 +144,10 @@ public class GridManager : MonoBehaviour
         {
             Vector3 worldPos = GetWorldPosition(gridPos);
            // Debug.Log(worldPos + " jo " + gridPos);
-            FloorTile cell = Instantiate(_floorTile, worldPos, Quaternion.identity);
+          SingleGridObject cell = Instantiate(_tile, worldPos, Quaternion.identity);
             cell.Initialize(gridPos, () =>
             {
+                
                 //_grid.Add(gridPos, cell);
                 //Debug.Log($"Initialized cell at {gridPos}");
             });
@@ -125,27 +167,33 @@ public class GridManager : MonoBehaviour
        StartCoroutine(SpawnRoutineCo(x, z));
     }
 
-
-    public void SpawnInteractableAtCell(MonoBehaviour _inter, FloorTile tile)
+    public SingleGridObject CheckIfCellExistsAndFree(Vector2Int key)
     {
-        if (tile == null)
+        
+        if(!_grid.ContainsKey(key))
         {
             Debug.LogWarning("SpawnInteractableAtCell: tile is null");
-            return;
+            return null;
         }
 
+        SingleGridObject _tile = _grid[key];
         // Prevent spawning multiple interactables
-        if (tile.HasInteractable)
+        if (_tile.HasInteractable)
         {
             Debug.LogWarning("Tile already has an interactable!");
-            return;
+            return null;
         }
+        return _tile;
+    }
+
+    public void AddInteractableToCell(IInteractable _inter, SingleGridObject tile)
+    {
+
 
         // Spawn the prefab at the tile's world position
-        var spawned = Instantiate(_inter, tile.transform.position, Quaternion.identity);
-        IInteractable inter = spawned.GetComponent<IInteractable>();
+
         // Assign it to the tile
-        tile.SetInteractable(inter);
+        tile.AddObject(_inter);
 
     }
 
@@ -174,11 +222,11 @@ public class GridManager : MonoBehaviour
         yield return null;
     }
 
-    internal FloorTile GetTileAt(int cellX, int cellZ)
+    internal SingleGridObject GetTileAt(int cellX, int cellZ)
     {
         Vector2Int key = new Vector2Int(cellX, cellZ);
 
-        if (_grid.TryGetValue(key, out FloorTile tile))
+        if (_grid.TryGetValue(key, out SingleGridObject tile))
         {
             return tile;
         }

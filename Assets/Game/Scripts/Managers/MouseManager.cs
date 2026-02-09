@@ -9,7 +9,6 @@ public class MouseManager : MonoBehaviour
     [SerializeField] private Vector3 _mousePosition;
     private Ray _mouseRay;
     private RaycastHit _hit;
-    private int _cellSize = 2;
     [SerializeField] private MonoBehaviour _npc;
 
     private void Awake()
@@ -30,7 +29,8 @@ public class MouseManager : MonoBehaviour
                 FloorTile tile = _hit.transform.GetComponent<FloorTile>();
                 if (tile != null)
                 {
-                    GridManager.Instance.SpawnInteractableAtCell(_npc, tile);
+
+                    //GridManager.Instance.SpawnInteractableAtCell(_npc, tile);
                 }
             }
         }

@@ -1,0 +1,20 @@
+fileFormatVersion: 2
+guid: f98d3071d2b8ad048aac549c5d22a0c6
+ShaderImporter:
+  externalObjects: {}
+  defaultTextures:
+  - _GalaxyTexture: {fileID: 8900000, guid: b9f9da1e400de224b8fcd0c5ad4a46db, type: 3}
+  - _StarsTexture: {fileID: 2800000, guid: 644f27aae8365bc4eac6e7c2899c78fb, type: 3}
+  - _StarsNoiseTexture: {fileID: 2800000, guid: c0e12b60cf1bfeb4a9e85b9f780abaa2,
+      type: 3}
+  nonModifiableTextures: []
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+AssetOrigin:
+  serializedVersion: 1
+  productId: 323303
+  packageName: Free Galaxy Shader - HDRP
+  packageVersion: 1.0.0
+  assetPath: Assets/Vefects/Free Galaxy Shader HDRP/Galaxy/Shaders/SH_Vefects_HDRP_Galaxy.shader
+  uploadId: 764079
