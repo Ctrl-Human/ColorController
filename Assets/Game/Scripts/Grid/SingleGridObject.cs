@@ -8,6 +8,17 @@ public enum TileType
     StairDown
 }
 
+[Flags]
+public enum TileAccess
+{
+    None = 0,
+    PlayerPINK = 1 << 0,
+    PlayerGREEN = 1 << 1,
+    All = PlayerPINK | PlayerGREEN
+}
+
+
+
 public abstract class SingleGridObject : MonoBehaviour
 {
     // Grid identity
@@ -26,26 +37,33 @@ public abstract class SingleGridObject : MonoBehaviour
 
     public bool IsWalkable => _isWalkable;
     private bool _isWalkable = true;
-
+    [SerializeField] protected TileAccess Access = TileAccess.All;
     public bool HasInteractable => _interactable != null;
 
-    public virtual void Initialize(Vector2Int key, int height, TileType type, Action onComplete)
+    public virtual void Initialize(Vector2Int key, int height, TileType type, Action onComplete, TileAccess tileAccess=TileAccess.All)
     {
         GridPos = key;
         HeightLevel = height;
         Type = type;
-
+        Access = tileAccess;
         onComplete?.Invoke();
     }
 
-    public abstract void Initialize(Vector2Int key, Action onComplete);
+    public bool IsAccessibleBy(TileAccess agent)
+    {
+        return (Access & agent) != 0;
+    }
+
+
+
+    public abstract void Initialize(Vector2Int key, Action onComplete, TileAccess access);
 
     public abstract void Destroy();
     public abstract Vector3 GetCenterPoint();
     public virtual void AddObject(IInteractable interObject)
     {
         _interactable = interObject;
-        _isWalkable = false;
+        //_isWalkable = false;
     }
 
     public void ResetPathData()

@@ -5,8 +5,10 @@ public class MouseManager : MonoBehaviour
 {
     public static MouseManager Instance { get; private set; }
 
-
+    [SerializeField] private PlayerController _playerControllerPINK;
+    [SerializeField] private PlayerController _playerControllerGREEN;
     [SerializeField] private Vector3 _mousePosition;
+    [SerializeField] private GameManager _gameManager;
     private Ray _mouseRay;
     private RaycastHit _hit;
     [SerializeField] private MonoBehaviour _npc;
@@ -26,11 +28,30 @@ public class MouseManager : MonoBehaviour
             if (Physics.Raycast(_mouseRay, out _hit))
             {
                 // _hit.transform is the FloorTile you clicked
-                FloorTile tile = _hit.transform.GetComponent<FloorTile>();
+                FloorTile tile = _hit.transform.GetComponentInParent<FloorTile>();
+                Debug.Log($"Hit: {_hit.collider.name} | Root: {_hit.collider.transform.root.name}");
+
                 if (tile != null)
                 {
+                    Debug.Log(tile.Key);
+                    _gameManager.MovePlayerOnGrid(tile, _playerControllerGREEN);
+                }
+            }
+        }
 
-                    //GridManager.Instance.SpawnInteractableAtCell(_npc, tile);
+        if (Input.GetMouseButtonDown(1)) // left mouse button
+        {
+            if (Physics.Raycast(_mouseRay, out _hit))
+            {
+                // _hit.transform is the FloorTile you clicked
+                FloorTile tile = _hit.transform.GetComponentInParent<FloorTile>();
+                Debug.Log($"Hit: {_hit.collider.name} | Root: {_hit.collider.transform.root.name}");
+
+                if (tile != null)
+                {
+                    Debug.Log(tile.Key);
+                    _gameManager.MovePlayerOnGrid(tile, _playerControllerPINK);
+
                 }
             }
         }

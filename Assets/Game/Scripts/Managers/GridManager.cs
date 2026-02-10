@@ -15,11 +15,18 @@ public class GridManager : MonoBehaviour
     [SerializeField] private SingleGridObject _tile;
     [SerializeField] private int _gridSize = 20;
     [SerializeField] private int _cellSize = 2;
+    [SerializeField] private int _height = 0;
+    [SerializeField] private int _debugIntZFrom = 0;
+    [SerializeField] private int _debugIntZTo = 0;
+    [SerializeField] private int _debugIntXFrom = 0;
+    [SerializeField] private int _debugIntXTo = 0;
 
     [SerializeField] private AStarGridModule _astarGridModule;
+    [SerializeField] private GameManager _gameManager;
 
     public int CellSize => _cellSize;
     public int GridSize => _gridSize;
+
 
 
 
@@ -54,42 +61,41 @@ public class GridManager : MonoBehaviour
 
     }
 
-    private void Start()
+    public void SpawnGrid(Action onComplete, int offsetX)
     {
-       StartCoroutine(SpawnFullGridCoroutine());
+       StartCoroutine(SpawnFullGridCoroutine(offsetX, onComplete));
         // Optional: spawn full grid on start
         // StartCoroutine(SpawnFullGridCoroutine());
     }
 
+
+    public List<SingleGridObject> GetAStarPath(SingleGridObject _start, SingleGridObject _target)
+    {
+
+       return _astarGridModule.FindPath( _start, _target );
+    }
 
     private void Update()
     {
         if(Input.GetKeyDown(KeyCode.A))
         {
             Debug.Log("jo");
-            _grid.TryGetValue(new Vector2Int(2, 2), out SingleGridObject startCell);
-            _grid.TryGetValue(new Vector2Int(8, 13), out SingleGridObject endCell);
-          List<SingleGridObject> _path =  _astarGridModule.FindPath(startCell,endCell);
-            Debug.Log(_path);
 
-            foreach (SingleGridObject path in _path)
-            {
-                path.gameObject.SetActive(false);
-            }
+            
         }
     }
     #region Grid Helpers
 
     // Converts grid coordinates to world position (center of cell)
-    private Vector3 GetWorldPosition(Vector2Int gridPos)
+    private Vector3 GetWorldPosition(Vector2Int gridPos, int heightLevel)
     {
         float offsetX = _gridSize * 0.5f * _cellSize;
         float offsetZ = _gridSize * 0.5f * _cellSize;
 
         return new Vector3(
-            (gridPos.x + 0.5f) * _cellSize - offsetX,
-            0,
-            (gridPos.y + 0.5f) * _cellSize - offsetZ
+            (gridPos.x + 0.5f) * _cellSize ,
+            heightLevel * _cellSize,
+            (gridPos.y + 0.5f) * _cellSize
         );
     }
 
@@ -118,21 +124,35 @@ public class GridManager : MonoBehaviour
     #region Spawn Grid
 
     // Coroutine to spawn a full grid (optional)
-    private IEnumerator SpawnFullGridCoroutine()
+    private IEnumerator SpawnFullGridCoroutine(int offsetX, Action onComplete)
     {
-        for (int z = 0; z < _gridSize; z++)
+        for (int z = _debugIntZFrom; z < _debugIntZTo; z++)
         {
-            for (int x = 0; x < _gridSize; x++)
+            for (int x = _debugIntXFrom+offsetX; x < _debugIntXTo+offsetX; x++)
             {
+                _height = 0;
                 Vector2Int pos = new Vector2Int(x, z);
-                SpawnCell(pos);
+                SpawnCell(pos, _height,TileType.Flat, TileAccess.PlayerGREEN);
                 yield return new WaitForEndOfFrame(); // small delay if you want a "wave spawn"
             }
         }
+        for (int z = _debugIntZFrom+10; z < _debugIntZTo+10; z++)
+        {
+            for (int x = _debugIntXFrom+offsetX; x < _debugIntXTo+offsetX; x++)
+            {
+                _height = 0;
+                Vector2Int pos = new Vector2Int(x, z);
+                SpawnCell(pos, _height, TileType.Flat, TileAccess.PlayerPINK);
+                yield return new WaitForEndOfFrame(); // small delay if you want a "wave spawn"
+            }
+        }
+
+        onComplete?.Invoke();
+
     }
 
     // Creates a single cell at grid position
-    private void SpawnCell(Vector2Int gridPos)
+    private void SpawnCell(Vector2Int gridPos, int HeightLevel, TileType tileType=TileType.Flat, TileAccess access=TileAccess.All)
     {
        // Debug.Log("neu: " + gridPos);
         if (_grid.ContainsKey(gridPos))
@@ -142,7 +162,7 @@ public class GridManager : MonoBehaviour
         }
         if (!_grid.ContainsKey(gridPos))
         {
-            Vector3 worldPos = GetWorldPosition(gridPos);
+            Vector3 worldPos = GetWorldPosition(gridPos, HeightLevel);
            // Debug.Log(worldPos + " jo " + gridPos);
           SingleGridObject cell = Instantiate(_tile, worldPos, Quaternion.identity);
             cell.Initialize(gridPos, () =>
@@ -150,7 +170,8 @@ public class GridManager : MonoBehaviour
                 
                 //_grid.Add(gridPos, cell);
                 //Debug.Log($"Initialized cell at {gridPos}");
-            });
+            }, access);
+            
             _grid.Add(gridPos, cell);
 
             //return cell;
@@ -201,7 +222,7 @@ public class GridManager : MonoBehaviour
     {
         Vector3 pos = new Vector3(x * cellSize, 0, y * cellSize);
         // spawn or activate your grid marker here
-        SpawnCell(new Vector2Int(x,y));
+        SpawnCell(new Vector2Int(x,y), _height);
     }
 
     IEnumerator SpawnRoutineCo(int x, int z)
@@ -214,7 +235,7 @@ public class GridManager : MonoBehaviour
                 Vector2Int spawnPos = new Vector2Int(x + offset.x, z + offset.y);
 
                 Debug.Log($"Spawning at {spawnPos} with offset {offset}");
-                SpawnCell(spawnPos);
+                SpawnCell(spawnPos, _height);
 
             }
             yield return new WaitForSeconds(1f);
@@ -235,6 +256,18 @@ public class GridManager : MonoBehaviour
             Debug.LogWarning($"GetTileAt: no tile found at ({cellX},{cellZ})");
             return null;
         }
+    }
+
+    internal SingleGridObject GetStartTile(PlayerController _player)
+    {
+        foreach(SingleGridObject _cell in _grid.Values)
+        {
+            if(_cell.IsAccessibleBy(_player.TileAccess))
+            {
+                return _cell;
+            }
+        }
+        return null;
     }
 
     #endregion

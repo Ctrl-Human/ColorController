@@ -21,11 +21,11 @@ public class FloorTile : SingleGridObject
         throw new NotImplementedException();
     }
 
-    public override void Initialize(Vector2Int key, Action onComplete)
+    public override void Initialize(Vector2Int key, Action onComplete, TileAccess access)
     {
-        base.Initialize(key, _heightLevel, _tileType , onComplete);
-
-        _visualKey.text = $"{key}\nH:{HeightLevel}";
+        base.Initialize(key, _heightLevel, _tileType , onComplete, access);
+            Key = key;
+        _visualKey.text = $"{key}";
         StartAnimation(null);
     }
 
@@ -49,6 +49,11 @@ public class FloorTile : SingleGridObject
 
     public override Vector3 GetCenterPoint()
     {
+       if(this.HasInteractable)
+        {
+            return Interactable.GetInteractPosition();
+        }
+
         Vector3 _pos = new Vector3(
             transform.position.x + GridManager.Instance.CellSize * 0.25f,
             transform.position.y,

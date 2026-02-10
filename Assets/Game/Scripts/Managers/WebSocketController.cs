@@ -6,7 +6,7 @@ using Newtonsoft.Json.Linq;
 
 public class WebsocketController : MonoBehaviour
 {
-    public static WebsocketController instance;
+
 
     [SerializeField] private WebToGrid _webToGrid;
 
@@ -15,11 +15,11 @@ public class WebsocketController : MonoBehaviour
     private bool test = false;
 
     [SerializeField] private string serverUrl = "ws://v2202601328887424492.powersrv.de:3000/";
+    [SerializeField] private GameManager _gameManager;
 
-    private void Awake()
+    public void Initialize(GameManager gameManager)
     {
-        if (instance == null) instance = this;
-        else Destroy(gameObject);
+        _gameManager = gameManager;
     }
 
     async void Start()
@@ -52,7 +52,7 @@ public class WebsocketController : MonoBehaviour
                 if (type == "colorData")
                 {
                     var payload = root["payload"].ToObject<PayloadColorData>();
-                    _webToGrid.UpdateWebDataToGrid(payload);
+                    _gameManager.GetWebDataColor(payload);   
                 }
                 else if (type == "clientData")
                 {

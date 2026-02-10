@@ -1,3 +1,4 @@
+using Unity.Cinemachine;
 using UnityEngine;
 using static Unity.Burst.Intrinsics.X86.Avx;
 
@@ -8,6 +9,8 @@ public class CameraManager : MonoBehaviour
     [SerializeField] private Camera _mainCam;
     [SerializeField] private Camera _cameraGreenPlayer;
     [SerializeField] private Camera _cameraPinkPlayer;
+    [SerializeField] private CinemachineCamera _busCam;
+    [SerializeField] private CinemachineCamera _mainCineCam;
 
     private bool _mainCameraActive = true;
 
@@ -30,6 +33,12 @@ public class CameraManager : MonoBehaviour
         _mainCam.enabled = false;
         _cameraGreenPlayer.enabled = true;
         _cameraPinkPlayer.enabled = true;
+    }
+
+    public void SwitchToBusCam()
+    {
+        _mainCineCam.Priority = 0;
+        _busCam.Priority = 20;
     }
 
     public void SwitchSplitMainCamera()

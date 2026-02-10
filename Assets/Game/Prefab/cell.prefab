@@ -13,8 +13,7 @@ GameObject:
   - component: {fileID: 4100278080698048853}
   - component: {fileID: 4754900155674739920}
   - component: {fileID: 7920737522771678975}
-  - component: {fileID: 7818285687740846450}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: cell
   m_TagString: Cell
   m_Icon: {fileID: 0}
@@ -53,6 +52,7 @@ MonoBehaviour:
   G: 0
   H: 0
   Parent: {fileID: 0}
+  Access: -1
   _floorMesh: {fileID: 7841076683917279650}
   _visualKey: {fileID: 3295521337759855464}
   _heightLevel: 0
@@ -131,25 +131,6 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 1}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7818285687740846450
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1225550355014269441}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5eca589351f670444a3c6380669f6af8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  G: 0
-  H: 0
-  Parent: {fileID: 0}
-  _floorMesh: {fileID: 0}
-  _visualKey: {fileID: 0}
-  _heightLevel: 0
-  _tileType: 0
 --- !u!1 &5312704379124368126
 GameObject:
   m_ObjectHideFlags: 0
@@ -162,7 +143,7 @@ GameObject:
   - component: {fileID: 2622721944406501622}
   - component: {fileID: 2870343510654494434}
   - component: {fileID: 2106149562022379415}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -263,7 +244,7 @@ GameObject:
   - component: {fileID: 5286750615760070618}
   - component: {fileID: 7744091530610349429}
   - component: {fileID: 3295521337759855464}
-  m_Layer: 5
+  m_Layer: 6
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -400,7 +381,7 @@ GameObject:
   - component: {fileID: 805839148710120313}
   - component: {fileID: 6951574976716024166}
   - component: {fileID: 4658623135508851169}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}

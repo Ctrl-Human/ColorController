@@ -15,7 +15,8 @@ public class AStarGridModule : MonoBehaviour
 
     internal List<SingleGridObject> FindPath(
      SingleGridObject start,
-     SingleGridObject goal
+     SingleGridObject goal,
+     TileAccess agentPlayer=TileAccess.All
  )
     {
         var open = new List<SingleGridObject>();
@@ -44,7 +45,7 @@ public class AStarGridModule : MonoBehaviour
                 if (closed.Contains(neighbor))
                     continue;
 
-                if (!CanMove(current, neighbor))
+                if (!CanMove(current, neighbor, agentPlayer))
                     continue;
 
                 int tentativeG = current.G + 1;
@@ -65,14 +66,19 @@ public class AStarGridModule : MonoBehaviour
     }
 
 
-    private bool CanMove(SingleGridObject from, SingleGridObject to)
+    private bool CanMove(SingleGridObject from, SingleGridObject to, TileAccess agentPlayer)
     {
         int dh = to.HeightLevel - from.HeightLevel;
+
+
 
         if (!to.IsWalkable)
         {
             return false;
         }
+
+        if (!to.IsAccessibleBy(agentPlayer))
+            return false;
 
         // Same height → always ok
         if (dh == 0)
