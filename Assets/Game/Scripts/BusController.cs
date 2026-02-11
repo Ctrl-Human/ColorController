@@ -1,6 +1,7 @@
 ﻿using System;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.VFX;
 using static UnityEditor.PlayerSettings;
 using static UnityEngine.Rendering.DebugUI;
 using static UnityEngine.UI.Image;
@@ -17,6 +18,8 @@ public class BusController : MonoBehaviour
     [SerializeField] private Camera _busCamera;
     private bool _isDriving = false;
     private bool _canShoot = true;
+
+    [SerializeField] private VisualEffect _waterCanon;
 
     internal void Steer(float xSteer)
     {
@@ -54,6 +57,8 @@ public class BusController : MonoBehaviour
         );
 
         p.Initialize(direction);
+        _waterCanon.SetVector3("WaterDirection", direction*10f);
+        _waterCanon.SetVector3("CanonPosition", _canon.position);
     }
 
 
